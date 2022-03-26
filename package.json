@@ -1,0 +1,27 @@
+{
+  "name": "dbms2022",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BrunoStevaux/DBMS2022.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BrunoStevaux/DBMS2022/issues"
+  },
+  "homepage": "https://github.com/BrunoStevaux/DBMS2022#readme",
+  "dependencies": {
+    "@discordjs/rest": "^0.3.0",
+    "chalk": "^4.1.0",
+    "discord-api-types": "^0.30.0",
+    "discord.js": "^13.6.0",
+    "dotenv": "^16.0.0",
+    "mysql": "^2.18.1"
+  }
+}
