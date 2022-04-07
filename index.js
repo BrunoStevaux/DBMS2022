@@ -12,7 +12,7 @@ const database = mysql.createConnection({
 
 database.connect(function(err) {
     if (err) throw err;
-    console.log("Connected!");
+    console.log("INDEX.JS Connected!");
 });
 
 const token = process.env.TOKEN;
