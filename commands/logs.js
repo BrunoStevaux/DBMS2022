@@ -68,7 +68,7 @@ module.exports = {
             result.forEach(element => {
                 
                 // embReply.addField(`${date.format(element.msgtime, 'hh:mm:ss - ddd, MMM DD YYYY')}`, element.msgcontent, false);
-                embReply.addField(`${element.msgtime}`, element.msgcontent.substring(0, 200), false);
+                embReply.addField(`${element.msgtime}`, element.msgcontent.substring(0, 200) || "...", false);
             });
             interaction.reply({embeds: [embReply]});
         });
