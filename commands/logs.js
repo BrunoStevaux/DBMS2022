@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed, Interaction } = require('discord.js');
-
+const date = require('date-and-time');
 
 const mysql = require('mysql');
 
@@ -15,20 +15,6 @@ database.connect(function(err) {
     if (err) throw err;
     console.log("LOG.JS Connected!");
 });
-
-
-// async function find(query) {
-
-//     let messages = [];
-
-//     database.query(query, (err, result) => {
-//         if(err) {
-//             console.error(err);
-//         }
-//         messages.push = (result);
-//     });
-//     return(messages);
-// }
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -46,7 +32,7 @@ module.exports = {
                 .addChoice('ASC', 'ASC'))
         .addIntegerOption(option =>
             option.setName('amount')
-                .setDescription('Number of messages to return (max 20)')),
+                .setDescription('Number of messages to return (max 10)')),
 
 	async execute(interaction) {
         const targetUser = interaction.options.getUser('user').id;
@@ -56,24 +42,46 @@ module.exports = {
         // If they enter 0 do nothing
         if(amount == 0) return;
 
-        let query = `SELECT * FROM \`933778686023450694\` WHERE ${targetUser} = userid AND msgeditedtime = 0 ORDER BY msgtime ${sort} LIMIT ${amount}`;
+        let query = `SELECT * FROM \`933778686023450694\` WHERE ${targetUser} = userid ORDER BY msgtime ${sort}, msgeditedtime ${sort} LIMIT ${amount}`;
         console.log(query);
-        // For some reason I cannot access anything inside of this function that is not declared inside of it...
-        // So for now we do everything in here :)
-        database.query(query, (err, result) => {
-            let embReply = new MessageEmbed()
-            .setTitle(`Logs for ${targetUser}`)
-            .setDescription(`Recent ${amount} messages in ${sort} order.`);
-            if(err) console.error(err);
-            result.forEach(element => {
-                
-                // embReply.addField(`${date.format(element.msgtime, 'hh:mm:ss - ddd, MMM DD YYYY')}`, element.msgcontent, false);
-                embReply.addField(`${element.msgtime}`, element.msgcontent.substring(0, 200) || "...", false);
-            });
-            interaction.reply({embeds: [embReply]});
+
+        let embReply = new MessageEmbed()
+            .setTitle(`Logs for ${interaction.options.getUser('user').username}`)
+            .setDescription(`Recent ${amount} messages in ${sort} order.`)
+            .setThumbnail(interaction.options.getUser('user').displayAvatarURL());
+        
+        let result = await this.querytest(query);
+        result.forEach(element => {
+            console.log(element);
+            let content;
+
+            // If message is deleted
+            if (parseInt(element.msgdeletedtime) > 0) {
+                content = `[DELETED] ${element.msgcontent.substring(0, 200) || "..."}`;
+            } else {
+                content = element.msgcontent.substring(0, 200) || "...";
+            }
+
+            // If message is edited
+            if (parseInt(element.msgeditedtime) > 0) {
+                content = `[EDITED] ${element.msgcontent.substring(0, 200) || "..."}`;
+            } else {
+                content = element.msgcontent.substring(0, 200) || "...";
+            }
+            
+            embReply.addField(`${date.format(new Date(element.msgtime), 'hh:mm:ss - ddd, MMM DD YYYY')}`, content, false);
         });
 
+        interaction.reply({embeds: [embReply]});
+    },
 
+    querytest(query) {
+        return new Promise((resolve, reject) => {
+            database.query(query, (err, result) => {
+                if(err) return reject(err)
+                resolve(result);
+            });
+        })
     }
 },
 
