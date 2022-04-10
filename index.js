@@ -60,6 +60,8 @@ client.on('messageCreate', async message => {
 
     let msgID = message.id;
     let msgContent = message.content;
+    if (message.attachments.size > 0) msgContent += message.attachments.first().proxyURL;
+
     let msgTime = message.createdTimestamp;
     let msgGuildName = message.guild.name;
     let msgGuildID = message.guild.id;
@@ -81,6 +83,7 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
 
     let msgID = newMessage.id;
     let msgContent = newMessage.content;
+    if (newMessage.attachments.size > 0) msgContent += newMessage.attachments.first().proxyURL;
     let msgTime = newMessage.createdTimestamp;
     let msgGuildName = newMessage.guild.name;
     let msgGuildID = newMessage.guild.id;
